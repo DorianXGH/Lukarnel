@@ -1,9 +1,9 @@
 # Design Goals
 
-64bits only
-nanokernel : Kernel contains only the scheduler and the interrupt receiver (no handling)
-kernel-services : separate processes in ring 0 : low-level drivers 
-application-services : processes in ring 3 : page allocator, page transferer, process manager, high-level drivers, etc ...
+* 64bits only
+* nanokernel : Kernel contains only the scheduler and the interrupt receiver (no handling)
+* kernel-services : separate processes in ring 0 : low-level drivers 
+* application-services : processes in ring 3 : page allocator, page transferer, process manager, high-level drivers, etc ...
 
 ## Syscall
 Unique, general purpose syscall "Send". int 0x81, rax : pid of receiver, rbx : 1st page adress, rcx : number of pages. Returns a success code : 0 success, 1 transferer full
