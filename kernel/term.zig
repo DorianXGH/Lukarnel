@@ -37,9 +37,9 @@ pub const terminal = struct {
     const buffer = @intToPtr([*]volatile u16, 0xB8000);
 
     pub fn initialize() void {
-        var y = usize(0);
+        var y = @intCast(usize, 0);
         while (y < VGA_HEIGHT) : (y += 1) {
-            var x = usize(0);
+            var x = @intCast(usize, 0);
             while (x < VGA_WIDTH) : (x += 1) {
                 putCharAt(' ', color, x, y);
             }
