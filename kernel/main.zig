@@ -24,7 +24,7 @@ const Color = packed struct {
     A: u8,
 };
 fn kmain(info: [*c]tboot.tboot_info) void {
-    pixels = @intToPtr([*]Color, info.*.framebuffer.address);
+    var pixels = @intToPtr([*]Color, info.*.framebuffer.address);
     pixels[0] = Color{ .B = 255, .G = 255, .R = 255, .A = 0 };
     pixels[1] = Color{ .B = 255, .G = 255, .R = 255, .A = 255 };
     pixels[2] = Color{ .B = 255, .G = 0, .R = 0, .A = 0 };
