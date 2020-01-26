@@ -34,7 +34,7 @@ pub const terminal = struct {
     var column = @intCast(usize, 0);
     var color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
-    const buffer = @intToPtr([*]volatile u16, 0xB8000);
+    pub var buffer = @intToPtr([*]volatile u16, 0xB8000);
 
     pub fn initialize() void {
         var y = @intCast(usize, 0);

@@ -8,19 +8,20 @@ pub const MEMORY_TYPE = enum(u32) {
     ACPI_NVS = 4,
     _,
 };
+
+pub const mmap_entry = packed struct {
+    mtype: MEMORY_TYPE,
+    address: u64,
+    length: u64,
+};
+
+pub const module_entry = packed struct {
+    base: u64,
+    length: u64,
+    name: [*c]u8, // c pointer : bad, but not much choice
+};
+
 pub const tboot_info = packed struct {
-    pub const mmap_entry = packed struct {
-        mtype: MEMORY_TYPE,
-        address: u64,
-        length: u64,
-    };
-
-    pub const module_entry = packed struct {
-        base: u64,
-        length: u64,
-        name: [*c]u8, // c pointer : bad, but not much choice
-    };
-
     features: packed union {
         flags: packed struct {
             mmap: u1,
