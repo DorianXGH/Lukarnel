@@ -23,15 +23,15 @@ fn vga_entry_color(fg: VgaColor, bg: VgaColor) u8 {
 }
 
 fn vga_entry(uc: u8, color: u8) u16 {
-    return u16(uc) | (u16(color) << 8);
+    return @intCast(u16, uc) | (@intCast(u16, color) << 8);
 }
 
 const VGA_WIDTH = 80;
 const VGA_HEIGHT = 25;
 
 pub const terminal = struct {
-    var row = usize(0);
-    var column = usize(0);
+    var row = @intCast(usize, 0);
+    var column = @intCast(usize, 0);
     var color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
     const buffer = @intToPtr([*]volatile u16, 0xB8000);
