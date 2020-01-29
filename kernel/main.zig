@@ -35,19 +35,30 @@ fn draw2p(pixels: [*]volatile Color, n: u32, col: Color) void {
 
 fn kmain(info: [*c]tboot.tboot_info) void {
     var pixels = @intToPtr([*]volatile Color, info.*.frmb_address);
+
     var pixelsraw = @intToPtr([*]volatile u32, info.*.frmb_address);
+
     var pixnum: u64 = (info.*.frmb_height) *% (info.*.frmb_pitch);
+
     var spd: u64 = 0;
     while (true) {
         var i: u64 = 0;
         while (i < pixnum) : (i += 1) {
-            pixelsraw[i] = 0xFFFFFFFF;
+            pixels[i] = Color{ .R = @intCast(u8, (i * i) % 256), .G = @intCast(u8, (i * i * i + 76) % 256), .B = @intCast(u8, (i + 164) % 256), .A = 0 };
         }
+
         var ro: u64 = 0;
         while (ro < 400) : (ro += 1) {
             var co: u64 = 0;
-            while (co < 10) : (co += 1) {
-                pixelsraw[spd + (co % info.*.frmb_width) + ro * info.*.frmb_pitch] = 0;
+            while (co < 100) : (co += 1) {
+                pixels[spd + (co % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{ .R = 0, .G = 0, .B = 0, .A = 0 };
+            }
+        }
+        ro = 0;
+        while (ro < 400) : (ro += 1) {
+            var co: u64 = 0;
+            while (co < 100) : (co += 1) {
+                pixels[spd + (co % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{ .R = 0, .G = 0, .B = 0, .A = 0 };
             }
         }
         spd += 1;
