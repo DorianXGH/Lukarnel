@@ -40,3 +40,46 @@ pub const PML4E = packed struct {
     nullbits: u9,
     execution_disabled: u1,
 };
+
+pub const PDPTE = packed struct {
+    present: u1,
+    RW: u1,
+    supervisor: u1,
+    write_through: u1,
+    cache_disabled: u1,
+    accessed: u1,
+    ignored: u1,
+    nullbits_flg: u5,
+    address: u42,
+    nullbits: u9,
+    execution_disabled: u1,
+};
+
+pub const PDE = packed struct {
+    present: u1,
+    RW: u1,
+    supervisor: u1,
+    write_through: u1,
+    cache_disabled: u1,
+    accessed: u1,
+    ignored: u1,
+    nullbits_flg: u5,
+    address: u42,
+    nullbits: u9,
+    execution_disabled: u1,
+};
+
+pub const PTE = packed struct {
+    present: u1,
+    RW: u1,
+    supervisor: u1,
+    write_through: u1,
+    cache_disabled: u1,
+    accessed: u1,
+    dirty: u1,
+    global: u1,
+    nullbits_flg: u4,
+    address: u42,
+    nullbits: u9,
+    execution_disabled: u1,
+};
