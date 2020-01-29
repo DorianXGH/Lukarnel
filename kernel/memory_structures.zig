@@ -20,3 +20,23 @@ pub const GDTE = packed struct {
     granularity: u1,
     base3: u8,
 };
+
+pub const CR3 = packed struct {
+    PCID: u12,
+    address: u42,
+    nullbits: u10,
+};
+
+pub const PML4E = packed struct {
+    present: u1,
+    RW: u1,
+    supervisor: u1,
+    write_through: u1,
+    cache_disabled: u1,
+    accessed: u1,
+    ignored: u1,
+    nullbits_flg: u5,
+    address: u42,
+    nullbits: u9,
+    execution_disabled: u1,
+};
