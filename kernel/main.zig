@@ -34,100 +34,24 @@ fn draw2p(pixels: [*]volatile Color, n: u32, col: Color) void {
 }
 
 fn kmain(info: [*c]tboot.tboot_info) void {
-    var pixels = @intToPtr([*]volatile Color, info.*.framebuffer.address);
-    var pixelsraw = @intToPtr([*]volatile u32, info.*.framebuffer.address);
-
-    pixels[200] = Color{ .B = 255, .G = 0, .R = 0, .A = 0 };
-    pixels[201] = Color{ .B = 255, .G = 0, .R = 0, .A = 0 };
-
-    if (info.*.framebuffer.width > 2147483648) {
-        pixels[0] = Color{ .B = 255, .G = 255, .R = 255, .A = 0 };
-    } else {
-        pixels[0] = Color{ .B = 0, .G = 0, .R = 255, .A = 0 };
-    }
-
-    if (info.*.framebuffer.width == info.*.framebuffer.address) {
-        pixels[1] = Color{ .B = 255, .G = 255, .R = 255, .A = 0 };
-    } else {
-        pixels[1] = Color{ .B = 0, .G = 0, .R = 255, .A = 0 };
-    }
-
-    if (info.*.features.flags.framebuffer == 1) {
-        pixels[2] = Color{ .B = 255, .G = 255, .R = 255, .A = 0 };
-    } else {
-        pixels[2] = Color{ .B = 0, .G = 0, .R = 255, .A = 0 };
-    }
-
-    if (info.*.framebuffer.height == 480) {
-        draw2p(pixels, 6, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 7, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 6 + 320, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 7 + 320, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-    } else {
-        draw2p(pixels, 6, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 7, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 6 + 320, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 7 + 320, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-    }
-    if (info.*.framebuffer.width == 640) {
-        draw2p(pixels, 8, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 9, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 8 + 320, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 9 + 320, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-    } else {
-        draw2p(pixels, 8, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 9, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 8 + 320, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 9 + 320, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-    }
-    if (info.*.framebuffer.pitch == 640) {
-        draw2p(pixels, 10, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 11, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 10 + 320, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-        draw2p(pixels, 11 + 320, Color{ .B = 255, .G = 255, .R = 255, .A = 0 });
-    } else {
-        draw2p(pixels, 10, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 11, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 10 + 320, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-        draw2p(pixels, 11 + 320, Color{ .B = 0, .G = 0, .R = 255, .A = 0 });
-    }
-
-    var dmp = @intToPtr([*]volatile u8, @ptrToInt(info));
-    var k: u32 = 0;
-    while (k < @bitSizeOf(tboot.tboot_info)) : (k += 1) {
-        var bit: u32 = dmp[k >> 3] >> @intCast(u3, k % 8);
-        bit &= 1;
-        if (bit == 1) {
-            pixelsraw[k + 3 * 640 + (k / 64) * (640 - 64)] = 0xFFFFFFFF;
-        } else {
-            pixelsraw[k + 3 * 640 + (k / 64) * (640 - 64)] = 0xFFFF0000;
+    var pixels = @intToPtr([*]volatile Color, info.*.frmb_address);
+    var pixelsraw = @intToPtr([*]volatile u32, info.*.frmb_address);
+    var pixnum: u64 = (info.*.frmb_height) *% (info.*.frmb_pitch);
+    var spd: u64 = 0;
+    while (true) {
+        var i: u64 = 0;
+        while (i < pixnum) : (i += 1) {
+            pixelsraw[i] = 0xFFFFFFFF;
         }
-    }
-
-    if (@ptrToInt(&(info.*.framebuffer.address)) == @ptrToInt(&(info.*.framebuffer.width))) {
-        pixelsraw[50 * 640 + 4] = 0xFFFFFF00;
-    }
-    var dmpframe = @intToPtr([*]volatile u8, @ptrToInt(&(info.*.framebuffer.address)));
-    var k2: u32 = 0;
-    while (k2 < 32) : (k2 += 1) {
-        var bit: u32 = dmpframe[k2 >> 3] >> @intCast(u3, k2 % 8);
-        bit &= 1;
-        if (bit == 1) {
-            pixelsraw[k2 + 60 * 640 + (k2 / 64) * (640 - 64)] = 0xFFFFFFFF;
-        } else {
-            pixelsraw[k2 + 60 * 640 + (k2 / 64) * (640 - 64)] = 0xFF0000FF;
+        var ro: u64 = 0;
+        while (ro < 400) : (ro += 1) {
+            var co: u64 = 0;
+            while (co < 10) : (co += 1) {
+                pixelsraw[spd + (co % info.*.frmb_width) + ro * info.*.frmb_pitch] = 0;
+            }
         }
-    }
-
-    while (true) {}
-    var pixnum: u64 = (info.*.framebuffer.height) *% (info.*.framebuffer.pitch);
-
-    pixels[200] = Color{ .B = 0, .G = 255, .R = 0, .A = 0 };
-    pixels[201] = Color{ .B = 0, .G = 255, .R = 0, .A = 0 };
-
-    var i: u64 = 0;
-    while (i < pixnum) : (i += 1) {
-        pixels[i] = Color{ .B = 255, .G = 255, .R = 255, .A = 0 };
+        spd += 1;
+        spd %= info.*.frmb_width;
     }
     pixels[200] = Color{ .B = 255, .G = 255, .R = 0, .A = 0 };
     pixels[201] = Color{ .B = 255, .G = 0, .R = 255, .A = 0 };

@@ -1,5 +1,13 @@
 const builtin = @import("builtin");
 pub const magic = 0xCAFEBABE;
+
+pub const framebuffer = struct {
+    address: u64,
+    width: u32,
+    height: u32,
+    pitch: u32,
+};
+
 pub const MEMORY_TYPE = enum(u32) {
     RESERVED = 0,
     BAD_MEMORY = 1,
@@ -34,17 +42,13 @@ pub const tboot_info = packed struct {
         raw: u64,
     },
 
-    mmap: packed struct {
-        count: u64,
-        entried: [*c]mmap_entry,
-    },
+    mmap_count: u64,
+    mmap_entries: [*c]mmap_entry,
 
-    framebuffer: packed struct {
-        address: u64,
-        width: u32,
-        height: u32,
-        pitch: u32,
-    },
+    frmb_address: u64,
+    frmb_width: u32,
+    frmb_height: u32,
+    frmb_pitch: u32,
 
     cmdline: packed struct {
         length: u32,
