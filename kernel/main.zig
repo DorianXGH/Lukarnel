@@ -1,6 +1,7 @@
 const builtin = @import("builtin");
 const term = @import("term.zig");
 const tboot = @import("tboot/tboot.zig");
+const memory_structures = @import("memory_structures.zig");
 
 export var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined;
 const stack_bytes_slice = stack_bytes[0..];
