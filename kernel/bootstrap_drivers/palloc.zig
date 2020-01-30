@@ -14,7 +14,12 @@ pub const pallocator = struct {
 
         var j: u64 = 0;
         while (j < count) : (j += 1) {
-            if (memsegs[j].mtype == MEMORY_TYPE.USABLE and memsegs[j].length > maxpage + 1) {}
+            if (memsegs[j].mtype == MEMORY_TYPE.USABLE and memsegs[j].length > maxpage + 1) {
+                var k: u64 = memsegs[j].address >> 12 + 1;
+                while (k < (memsegs[j].address + memsegs[j].address) >> 12 - 1 and k < maxpage) {
+                    bitmap[k].other = 1;
+                }
+            }
         }
 
         var i: u64 = 0;
@@ -22,7 +27,8 @@ pub const pallocator = struct {
             if (memsegs[i].mtype == MEMORY_TYPE.USABLE) {
                 var k: u64 = memsegs[i].address >> 12 + 1;
                 while (k < (memsegs[i].address + memsegs[i].address) >> 12 - 1 and k < maxpage) {
-                    bitmap[k].allocatable = 1;
+                    if (bitmap[k].other == 0)
+                        bitmap[k].allocatable = 1;
                 }
             }
         }
