@@ -16,7 +16,7 @@ export fn _start(magic: u32, info: [*c]tboot.tboot_info) callconv(.Naked) noretu
 pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn {
     @setCold(true);
     var pixels = @intToPtr([*]volatile Color, @ptrToInt(term.terminal.buffer));
-    pixels[200 + 640 * 6] = Color{ .B = 255, .G = 0, .R = 255, .A = 0 };
+    pixels[200 + 640 * 8] = Color{ .B = 255, .G = 0, .R = 255, .A = 0 };
     term.terminal.write("A000A000A0000000000000000000000");
     //term.terminal.write(msg);
     while (true) {}
@@ -36,15 +36,17 @@ fn draw2p(pixels: [*]volatile Color, n: u32, col: Color) void {
 }
 
 fn kmain(info: [*c]tboot.tboot_info) void {
-    var page_allocator: palloc.pallocator = palloc.pallocator{ .bitmap = @intToPtr([*]palloc.page_metadata, 1), .maxpage = 0 };
-    page_allocator.init(info.*.mmap_entries, info.*.mmap_count);
     var pixels = @intToPtr([*]volatile Color, info.*.frmb_address);
 
     var pixelsraw = @intToPtr([*]volatile u32, info.*.frmb_address);
 
     var pixnum: u64 = (info.*.frmb_height) *% (info.*.frmb_pitch);
 
+    pixels[200 + 640 * 6] = Color{ .B = 255, .G = 0, .R = 255, .A = 0 };
+
+    var page_allocator: palloc.pallocator = palloc.pallocator.init(info.*.mmap_entries, info.*.mmap_count);
     var spd: u64 = 0;
+
     while (true) {
         var i: u64 = 0;
         while (i < pixnum) : (i += 1) {
