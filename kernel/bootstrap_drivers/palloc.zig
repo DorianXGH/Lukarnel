@@ -33,4 +33,9 @@ pub const pallocator = struct {
             }
         }
     }
+    pub fn palloc(self: pallocator, n: u64) [*]u8 {
+        var i: u64 = 0;
+        var current: u64 = 0;
+        while (i < maxpage) : (i += 1) {}
+    }
 };
