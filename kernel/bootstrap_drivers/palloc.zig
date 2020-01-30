@@ -36,6 +36,19 @@ pub const pallocator = struct {
     pub fn palloc(self: pallocator, n: u64) [*]u8 {
         var i: u64 = 0;
         var current: u64 = 0;
-        while (i < maxpage) : (i += 1) {}
+        var free_until: bool = false;
+        while (i < maxpage) : (i += 1) {
+            if (bitmap[i].allocatable == 1 and bitmap[i].free == 0) {
+                if (free_until == false) {
+                    free_until = true;
+                    current = i;
+                } else if (i - current >= n) {
+                    return @intToPtr([*]u8, current << 12);
+                }
+            } else {
+                free_until = false;
+            }
+        }
+        unreachable;
     }
 };
