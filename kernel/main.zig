@@ -36,6 +36,8 @@ fn draw2p(pixels: [*]volatile Color, n: u32, col: Color) void {
 }
 
 fn kmain(info: [*c]tboot.tboot_info) void {
+    var page_allocator: palloc.pallocator = palloc.pallocator{ .bitmap = @intToPtr([*]palloc.page_metadata, 1), .maxpage = 0 };
+    page_allocator.init(info.*.mmap_entries, info.*.mmap_count);
     var pixels = @intToPtr([*]volatile Color, info.*.frmb_address);
 
     var pixelsraw = @intToPtr([*]volatile u32, info.*.frmb_address);
