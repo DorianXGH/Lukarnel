@@ -1,5 +1,5 @@
 TARGET := -target x86_64-freestanding --release-safe
-SOURCES := $(shell find $(SOURCEDIR) -name '*.c')
+SOURCES := $(shell find $(SOURCEDIR) -name '*.zig')
 
 
 build/lukarnel.elf: kernel/main.zig $(SOURCES)
