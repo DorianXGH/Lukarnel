@@ -11,29 +11,36 @@ pub const pallocator = struct {
     maxpage: u64,
     pub fn init(memsegs: [*c]tboot.mmap_entry, count: u64) pallocator {
         var maxpage = ((memsegs[count - 1].address + memsegs[count - 1].length) >> 12) - 1;
-        var bitmap = @intToPtr([*]page_metadata, 1);
+        var obitmap = @intToPtr([*]page_metadata, 1);
         var j: u64 = 0;
+        var pix: [*]u32 = @intToPtr([*]u32, 0x80000000);
+        pix[300] = 0x00FF0000;
         while (j < count) : (j += 1) {
+            pix[400 + 2 * j] = 0x000000FF;
             if (memsegs[j].mtype == tboot.MEMORY_TYPE.USABLE and memsegs[j].length > maxpage + 1) {
-                bitmap = @intToPtr([*]page_metadata, memsegs[j].address);
-                var k: u64 = memsegs[j].address >> 12 + 1;
-                while (k < (memsegs[j].address + memsegs[j].address) >> 12 - 1 and k < maxpage) {
-                    bitmap[k].other = 1;
+                pix[302] = 0x00FF0000;
+                obitmap = @intToPtr([*]page_metadata, memsegs[j].address);
+                var k: u64 = memsegs[j].address >> 12;
+                while (k < (memsegs[j].address + memsegs[j].length) >> 12 + 1 and k < maxpage) : (k += 1) {
+                    pix[401 + 2 * j] = 0xFFFFFFFF;
+                    obitmap[k] = page_metadata{ .owned = 0, .allocatable = 0, .other = 1 };
+                    pix[401 + 2 * j] = @intCast(u32, k);
                 }
             }
+            pix[401 + 2 * j] = 0x000000FF;
         }
-
+        pix[301] = 0x0000FF00;
         var i: u64 = 0;
         while (i < count) : (i += 1) {
             if (memsegs[i].mtype == tboot.MEMORY_TYPE.USABLE) {
                 var k: u64 = memsegs[i].address >> 12 + 1;
                 while (k < (memsegs[i].address + memsegs[i].address) >> 12 - 1 and k < maxpage) {
-                    if (bitmap[k].other == 0)
-                        bitmap[k].allocatable = 1;
+                    if (obitmap[k].other == 0)
+                        obitmap[k] = page_metadata{ .owned = 0, .allocatable = 1, .other = 0 };
                 }
             }
         }
-        return pallocator{ .bitmap = bitmap, .maxpage = maxpage };
+        return pallocator{ .bitmap = obitmap, .maxpage = maxpage };
     }
     pub fn palloc(self: pallocator, n: u64) [*]u8 {
         var i: u64 = 0;

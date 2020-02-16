@@ -11,7 +11,7 @@ pack: build/lukarnel.elf
 	../umount_file.sh
 
 test: pack
-	qemu-system-x86_64 -bios /usr/share/ovmf/x64/OVMF_CODE.fd -drive format=raw,file=../efipart -cpu host -m 2G --enable-kvm
+	qemu-system-x86_64 -bios /usr/share/ovmf/x64/OVMF_CODE.fd -drive format=raw,file=../efipart -cpu host -m 2G --enable-kvm -monitor stdio -d int
 
 clean:
 	rm -rf build/*
