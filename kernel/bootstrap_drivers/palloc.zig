@@ -55,11 +55,13 @@ pub const pallocator = struct {
             pix[704] = 0x0000FF00;
             var i: u64 = 0;
             while (i < count) : (i += 1) {
+                pix[710] = 0x00FFFFFFF;
                 if (memsegs[i].mtype == tboot.MEMORY_TYPE.USABLE) {
                     pix[714 + 3 * i] = 0x00FFFFFFF;
-                    var k: u64 = memsegs[i].address >> 12 + 1;
-                    while (k < (((memsegs[i].address + memsegs[i].address) >> 12) - 1) and k < maxpage) {
-                        pix[715 + 3 * i] = 0x00FF00FFF;
+                    var k: u64 = (memsegs[i].address >> 12) + 1;
+                    pix[715 + 3 * i] = 0x00FFFFFFF * @intCast(u32, @boolToInt(k < (((memsegs[i].address + memsegs[i].length) >> 12) - 1)));
+                    while (k < (((memsegs[i].address + memsegs[i].length) >> 12) - 1) and k < maxpage) : (k += 1) {
+                        pix[716 + 3 * i] = 0x00FF00FFF;
                         if (obitmap[k].other == 0)
                             obitmap[k] = page_metadata{ .owned = 0, .allocatable = 1, .other = 0 };
                     }
@@ -72,6 +74,7 @@ pub const pallocator = struct {
             pix[702] = 0x00FF0000;
             pix[703] = 0x00FF0000;
             pix[704] = 0x00FF0000;
+            unreachable;
         }
         return pallocator{ .bitmap = obitmap, .maxpage = maxpage };
     }
@@ -87,7 +90,7 @@ pub const pallocator = struct {
                 } else if (i - current >= n) {
                     var k: u64 = current;
                     while (k < i) : (k += 1) {
-                        self.bitmap[i].owned = 1;
+                        self.bitmap[i] = page_metadata{ .allocatable = 1, .other = 0, .owned = 1 };
                     }
                     return @intToPtr([*]u8, current << 12);
                 }
