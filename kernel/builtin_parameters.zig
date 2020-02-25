@@ -1,0 +1,1 @@
+pub const KERNEL_RESERVED: u32 = 0x02000000;
