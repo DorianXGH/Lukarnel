@@ -4,16 +4,16 @@ const tboot = @import("tboot/tboot.zig");
 const memory_structures = @import("memory_structures.zig");
 const palloc = @import("bootstrap_drivers/palloc.zig");
 
-export var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined;
+export var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined; // because, lets face it, we kinda need a stack for our big beautiful kernel.
 const stack_bytes_slice = stack_bytes[0..];
 
-export fn _start(magic: u32, info: [*c]tboot.tboot_info) callconv(.Naked) noreturn {
+export fn _start(magic: u32, info: [*c]tboot.tboot_info) callconv(.Naked) noreturn { // check if we received the EFI information structure, if we did, launch the kernel on the new stack.
     if (magic == tboot.magic)
         @newStackCall(stack_bytes_slice, kmain, info);
     while (true) {}
 }
 
-pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn {
+pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn { // Does what it can : in case of caught runtime errors by zig, it goes there instead of, ya know, creating an interrupt.
     @setCold(true);
     var pixels = @intToPtr([*]volatile Color, @ptrToInt(term.terminal.buffer));
     pixels[200 + 640 * 8] = Color{ .B = 255, .G = 0, .R = 255, .A = 0 };
