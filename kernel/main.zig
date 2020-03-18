@@ -3,6 +3,7 @@ const term = @import("term.zig");
 const tboot = @import("tboot/tboot.zig");
 const memory_structures = @import("memory_structures.zig");
 const palloc = @import("bootstrap_drivers/palloc.zig");
+const build_param = @import("builtin_parameters.zig");
 
 export var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined; // because, lets face it, we kinda need a stack for our big beautiful kernel.
 const stack_bytes_slice = stack_bytes[0..];
@@ -36,7 +37,7 @@ fn kmain(info: [*c]tboot.tboot_info) void {
     var page_allocator: palloc.pallocator = palloc.pallocator.init(info.*.mmap_entries, info.*.mmap_count); // initialize a page allocator with the memory map given by the EFI information structure
 
     var resp: u64 = 0;
-    while (resp < 0x400) : (resp += 1) { // reserve pages for kernel code
+    while (resp < (build_param.KERNEL_RESERVED / 0x1000)) : (resp += 1) { // reserve pages for kernel code
         page_allocator.preserve(resp);
     }
 
