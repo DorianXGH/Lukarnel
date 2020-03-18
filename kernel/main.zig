@@ -36,6 +36,19 @@ fn kmain(info: [*c]tboot.tboot_info) void {
 
     var page_allocator: palloc.pallocator = palloc.pallocator.init(info.*.mmap_entries, info.*.mmap_count); // initialize a page allocator with the memory map given by the EFI information structure
 
+    var chatimgraw = @embedFile("../../logo_chat.bmp");
+    var offsetimg: u32 = 0;
+    var in: u5 = 0;
+    const bitmap_offset_offset: u32 = 0x000A;
+    while (in < 4) : (in += 1) {
+        var byteoff: u5 = in;
+        var bitoff: u5 = byteoff * 8;
+        offsetimg += @intCast(u32, chatimgraw[bitmap_offset_offset + in]) << bitoff;
+    }
+    pixels[100] = Color{ .R = 255, .G = 255, .B = 0, .A = 0 };
+    var chatdat = chatimgraw[offsetimg..];
+    pixels[102] = Color{ .R = 255, .G = 255, .B = 0, .A = 0 };
+
     var resp: u64 = 0;
     while (resp < (build_param.KERNEL_RESERVED / 0x1000)) : (resp += 1) { // reserve pages for kernel code
         page_allocator.preserve(resp);
@@ -52,11 +65,28 @@ fn kmain(info: [*c]tboot.tboot_info) void {
                 interpix[i] = Color{ .R = @intCast(u8, (i * i) % 256), .G = @intCast(u8, (i * i * i + 76) % 256), .B = @intCast(u8, (i + 164) % 256), .A = 0 };
             }
 
-            var ro: u64 = 0;
-            while (ro < 400) : (ro += 1) { // a moving black band because we need to move it, move it
-                var co: u64 = 0;
-                while (co < 100) : (co += 1) {
-                    interpix[((spd + co) % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{ .R = 0, .G = 0, .B = 0, .A = 0 };
+            {
+                var ro: u64 = 0;
+                while (ro < 400) : (ro += 1) { // a moving black band because we need to move it, move it
+                    var co: u64 = 0;
+                    while (co < 100) : (co += 1) {
+                        interpix[((spd + co) % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{ .R = 0, .G = 0, .B = 0, .A = 0 };
+                    }
+                }
+            }
+            {
+                const side: u32 = 100;
+                var ro: u64 = 0;
+                while (ro < 100) : (ro += 1) { // a moving black band because we need to move it, move it
+                    var co: u64 = 0;
+                    while (co < 100) : (co += 1) {
+                        interpix[(co % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{
+                            .R = chatdat[(co % side + (99 - ro) * side) * 4 + 2],
+                            .G = chatdat[(co % side + (99 - ro) * side) * 4 + 1],
+                            .B = chatdat[(co % side + (99 - ro) * side) * 4 + 0],
+                            .A = 0,
+                        };
+                    }
                 }
             }
         }
