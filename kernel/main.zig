@@ -4,6 +4,7 @@ const tboot = @import("tboot/tboot.zig");
 const memory_structures = @import("memory_structures.zig");
 const palloc = @import("bootstrap_drivers/palloc.zig");
 const build_param = @import("builtin_parameters.zig");
+const video = @import("bootstrap_drivers/video.zig");
 
 export var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined; // because, lets face it, we kinda need a stack for our big beautiful kernel.
 const stack_bytes_slice = stack_bytes[0..];
@@ -37,17 +38,8 @@ fn kmain(info: [*c]tboot.tboot_info) void {
     var page_allocator: palloc.pallocator = palloc.pallocator.init(info.*.mmap_entries, info.*.mmap_count); // initialize a page allocator with the memory map given by the EFI information structure
 
     var chatimgraw = @embedFile("../../logo_chat.bmp");
-    var offsetimg: u32 = 0;
-    var in: u5 = 0;
-    const bitmap_offset_offset: u32 = 0x000A;
-    while (in < 4) : (in += 1) {
-        var byteoff: u5 = in;
-        var bitoff: u5 = byteoff * 8;
-        offsetimg += @intCast(u32, chatimgraw[bitmap_offset_offset + in]) << bitoff;
-    }
-    pixels[100] = Color{ .R = 255, .G = 255, .B = 0, .A = 0 };
-    var chatdat = chatimgraw[offsetimg..];
-    pixels[102] = Color{ .R = 255, .G = 255, .B = 0, .A = 0 };
+    var chat: video.sprite = video.sprite.from_bitmap(chatimgraw[0..], 100, 100);
+    var chatdat = chat.pixels;
 
     var resp: u64 = 0;
     while (resp < (build_param.KERNEL_RESERVED / 0x1000)) : (resp += 1) { // reserve pages for kernel code
