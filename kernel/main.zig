@@ -38,7 +38,7 @@ fn kmain(info: [*c]tboot.tboot_info) void {
     var page_allocator: palloc.pallocator = palloc.pallocator.init(info.*.mmap_entries, info.*.mmap_count); // initialize a page allocator with the memory map given by the EFI information structure
 
     var chatimgraw = @embedFile("../../logo_chat.bmp");
-    var chat: video.sprite = video.sprite.from_bitmap(chatimgraw[0..], 100, 100);
+    var chat: video.Sprite = video.Sprite.from_bitmap(chatimgraw[0..], 100, 100);
     var chatdat = chat.pixels;
 
     var resp: u64 = 0;
