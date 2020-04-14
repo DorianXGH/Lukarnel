@@ -35,6 +35,10 @@ fn kmain(info: [*c]tboot.tboot_info) void {
 
     var pixnum: u64 = (info.*.frmb_height) *% (info.*.frmb_pitch); // get the number of pixels (as the are all 32 bits encoded, we can easily get the bytesize of the framebuffer)
 
+    video.screen.width = info.*.frmb_width;
+    video.screen.height = info.*.frmb_height;
+    video.screen.pitch = info.*.frmb_pitch;
+
     var page_allocator: palloc.pallocator = palloc.pallocator.init(info.*.mmap_entries, info.*.mmap_count); // initialize a page allocator with the memory map given by the EFI information structure
 
     var chatimgraw = @embedFile("../../logo_chat.bmp");
@@ -45,8 +49,11 @@ fn kmain(info: [*c]tboot.tboot_info) void {
     while (resp < (build_param.KERNEL_RESERVED / 0x1000)) : (resp += 1) { // reserve pages for kernel code
         page_allocator.preserve(resp);
     }
+    var interpixaddr = page_allocator.palloc((pixnum >> 10) + 1);
+    var interpix = @ptrCast([*]volatile Color, interpixaddr); // allocate pages for the second buffer (double buffering) (10 = 12 - 2, 12 for page, 2 because pixnum is in pixels of 4 bytes)
 
-    var interpix = @ptrCast([*]volatile Color, page_allocator.palloc((pixnum >> 10) + 1)); // allocate pages for the second buffer (double buffering) (10 = 12 - 2, 12 for page, 2 because pixnum is in pixels of 4 bytes)
+    video.screen.pixels = @ptrCast([*]volatile video.Color, interpixaddr);
+    video.screen.pixelsraw = @ptrCast([*]volatile u32, @alignCast(4, interpixaddr));
 
     var spd: u64 = 0;
     var delayer: u64 = 0;
@@ -68,18 +75,21 @@ fn kmain(info: [*c]tboot.tboot_info) void {
             }
             {
                 const side: u32 = 100;
-                var ro: u64 = 0;
-                while (ro < 100) : (ro += 1) { // a moving black band because we need to move it, move it
-                    var co: u64 = 0;
-                    while (co < 100) : (co += 1) {
-                        interpix[(co % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{
-                            .R = chatdat[(co % side + (99 - ro) * side) * 4 + 2],
-                            .G = chatdat[(co % side + (99 - ro) * side) * 4 + 1],
-                            .B = chatdat[(co % side + (99 - ro) * side) * 4 + 0],
-                            .A = 0,
-                        };
+                if (false) {
+                    var ro: u64 = 0;
+                    while (ro < 100) : (ro += 1) { // a moving black band because we need to move it, move it
+                        var co: u64 = 0;
+                        while (co < 100) : (co += 1) {
+                            interpix[(co % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{
+                                .R = chatdat[(co % side + (99 - ro) * side) * 4 + 2],
+                                .G = chatdat[(co % side + (99 - ro) * side) * 4 + 1],
+                                .B = chatdat[(co % side + (99 - ro) * side) * 4 + 0],
+                                .A = 0,
+                            };
+                        }
                     }
                 }
+                video.screen.draw_sprite(chat, 0, 0);
             }
         }
         var cop: u64 = 0;
