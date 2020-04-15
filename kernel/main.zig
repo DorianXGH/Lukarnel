@@ -61,35 +61,27 @@ fn kmain(info: [*c]tboot.tboot_info) void {
         if (true) {
             var i: u64 = 0;
             while (i < pixnum) : (i += 1) { // funky colors YAY
-                interpix[i] = Color{ .R = @intCast(u8, (i * i) % 256), .G = @intCast(u8, (i * i * i + 76) % 256), .B = @intCast(u8, (i + 164) % 256), .A = 0 };
+                interpix[i] = Color{ .R = 0, .G = 0, .B = 0, .A = 0 };
             }
 
             {
                 var ro: u64 = 0;
-                while (ro < 400) : (ro += 1) { // a moving black band because we need to move it, move it
+                while (ro < 10) : (ro += 1) {
                     var co: u64 = 0;
-                    while (co < 100) : (co += 1) {
-                        interpix[((spd + co) % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{ .R = 0, .G = 0, .B = 0, .A = 0 };
+                    while (co < 10) : (co += 1) {
+                        if ((@intCast(i64, ro) - 5) * (@intCast(i64, ro) - 5) +
+                            (@intCast(i64, co) - 5) * (@intCast(i64, co) - 5) <= 24)
+                        {
+                            interpix[((spd + co) % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{ .R = 255, .G = 255, .B = 255, .A = 255 };
+                        }
                     }
                 }
             }
             {
-                const side: u32 = 100;
-                if (false) {
-                    var ro: u64 = 0;
-                    while (ro < 100) : (ro += 1) { // a moving black band because we need to move it, move it
-                        var co: u64 = 0;
-                        while (co < 100) : (co += 1) {
-                            interpix[(co % info.*.frmb_width) + ro * info.*.frmb_pitch] = Color{
-                                .R = chatdat[(co % side + (99 - ro) * side) * 4 + 2],
-                                .G = chatdat[(co % side + (99 - ro) * side) * 4 + 1],
-                                .B = chatdat[(co % side + (99 - ro) * side) * 4 + 0],
-                                .A = 0,
-                            };
-                        }
-                    }
+                video.screen.draw_sprite(chat, (video.screen.width / 2) - 50, (video.screen.height / 2) - 50);
+                for (term.terminal.characters.spr) |charspr, n| {
+                    video.screen.draw_sprite(charspr, @intCast(u32, n * 11), 20);
                 }
-                video.screen.draw_sprite(chat, 0, 0);
             }
         }
         var cop: u64 = 0;
@@ -97,7 +89,7 @@ fn kmain(info: [*c]tboot.tboot_info) void {
             pixels[cop] = interpix[cop];
         }
         delayer += 1;
-        if (delayer > 32) { // slow the band, it moves too fast, sometimes.
+        if (delayer > 2) { // slow the band, it moves too fast, sometimes.
             spd += 1;
             delayer = 0;
         }
