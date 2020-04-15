@@ -17,6 +17,17 @@ pub const terminal = struct {
         pub var F = @embedFile("../font/F.bmp");
         pub var G = @embedFile("../font/G.bmp");
         pub var H = @embedFile("../font/H.bmp");
+        pub var I = @embedFile("../font/I.bmp");
+        pub var J = @embedFile("../font/J.bmp");
+        pub var K = @embedFile("../font/K.bmp");
+        pub var L = @embedFile("../font/L.bmp");
+        pub var M = @embedFile("../font/M.bmp");
+        pub var N = @embedFile("../font/N.bmp");
+        pub var O = @embedFile("../font/O.bmp");
+        pub var P = @embedFile("../font/P.bmp");
+        pub var Q = @embedFile("../font/Q.bmp");
+        pub var R = @embedFile("../font/R.bmp");
+        pub var S = @embedFile("../font/S.bmp");
         pub var spr = [_]video.Sprite{
             video.Sprite.from_bitmap(A[0..], 11, 20),
             video.Sprite.from_bitmap(B[0..], 11, 20),
