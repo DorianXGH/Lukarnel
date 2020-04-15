@@ -28,6 +28,19 @@ pub const terminal = struct {
         pub var Q = @embedFile("../font/Q.bmp");
         pub var R = @embedFile("../font/R.bmp");
         pub var S = @embedFile("../font/S.bmp");
+        pub var T = @embedFile("../font/T.bmp");
+        pub var U = @embedFile("../font/U.bmp");
+        pub var V = @embedFile("../font/V.bmp");
+        pub var W = @embedFile("../font/W.bmp");
+        pub var X = @embedFile("../font/X.bmp");
+        pub var Y = @embedFile("../font/Y.bmp");
+        pub var Z = @embedFile("../font/Z.bmp");
+        pub var a = @embedFile("../font/a.bmp");
+        pub var b = @embedFile("../font/b.bmp");
+        pub var c = @embedFile("../font/c.bmp");
+        pub var d = @embedFile("../font/d.bmp");
+        pub var e = @embedFile("../font/e.bmp");
+        pub var f = @embedFile("../font/f.bmp");
         pub var spr = [_]video.Sprite{
             video.Sprite.from_bitmap(A[0..], 11, 20),
             video.Sprite.from_bitmap(B[0..], 11, 20),
@@ -37,6 +50,30 @@ pub const terminal = struct {
             video.Sprite.from_bitmap(F[0..], 11, 20),
             video.Sprite.from_bitmap(G[0..], 11, 20),
             video.Sprite.from_bitmap(H[0..], 11, 20),
+            video.Sprite.from_bitmap(I[0..], 11, 20),
+            video.Sprite.from_bitmap(J[0..], 11, 20),
+            video.Sprite.from_bitmap(K[0..], 11, 20),
+            video.Sprite.from_bitmap(L[0..], 11, 20),
+            video.Sprite.from_bitmap(M[0..], 11, 20),
+            video.Sprite.from_bitmap(N[0..], 11, 20),
+            video.Sprite.from_bitmap(O[0..], 11, 20),
+            video.Sprite.from_bitmap(P[0..], 11, 20),
+            video.Sprite.from_bitmap(Q[0..], 11, 20),
+            video.Sprite.from_bitmap(R[0..], 11, 20),
+            video.Sprite.from_bitmap(S[0..], 11, 20),
+            video.Sprite.from_bitmap(T[0..], 11, 20),
+            video.Sprite.from_bitmap(U[0..], 11, 20),
+            video.Sprite.from_bitmap(V[0..], 11, 20),
+            video.Sprite.from_bitmap(W[0..], 11, 20),
+            video.Sprite.from_bitmap(X[0..], 11, 20),
+            video.Sprite.from_bitmap(Y[0..], 11, 20),
+            video.Sprite.from_bitmap(Z[0..], 11, 20),
+            video.Sprite.from_bitmap(a[0..], 11, 20),
+            video.Sprite.from_bitmap(b[0..], 11, 20),
+            video.Sprite.from_bitmap(c[0..], 11, 20),
+            video.Sprite.from_bitmap(d[0..], 11, 20),
+            video.Sprite.from_bitmap(e[0..], 11, 20),
+            video.Sprite.from_bitmap(f[0..], 11, 20),
         };
     };
 
