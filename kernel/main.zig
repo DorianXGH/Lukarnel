@@ -11,7 +11,7 @@ const stack_bytes_slice = stack_bytes[0..];
 
 export fn _start(magic: u32, info: [*c]tboot.tboot_info) callconv(.Naked) noreturn { // check if we received the EFI information structure, if we did, launch the kernel on the new stack.
     if (magic == tboot.magic)
-        @newStackCall(stack_bytes_slice, kmain, info);
+        @call(.{ .stack = stack_bytes_slice }, kmain, .{info});
     while (true) {}
 }
 
