@@ -10,7 +10,7 @@ pub const mb2_header = packed struct {
             .magic = MB2_MAGIC,
             .arch = arch,
             .header_len = header_len,
-            .checksum = 0xFFFFFFFF - (MB2_MAGIC +% arch +% header_len),
+            .checksum = (0xFFFFFFFF - (MB2_MAGIC +% arch +% header_len)) + 1,
         };
     }
 };

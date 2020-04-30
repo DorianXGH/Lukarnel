@@ -1,9 +1,10 @@
 TARGET := -target x86_64-freestanding --release-safe
 SOURCES := $(shell find $(SOURCEDIR) -name '*.zig')
+ZIG_PATH := /home/dorianb/zig-builds/zig-linux-x86_64-0.6.0+a08675723/
 
 
 build/lukarnel.elf: kernel/main.zig $(SOURCES)
-	zig build-exe $< $(TARGET) --name lukarnel.elf --output-dir build
+	$(ZIG_PATH)zig build-exe $< $(TARGET) --name lukarnel.elf --output-dir build
 
 pack: build/lukarnel.elf
 	../mount_file.sh
