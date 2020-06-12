@@ -1,16 +1,11 @@
+[PAUSED] Developpement of a zig kernel is paused while the language is unstable. It will resume once the language is more mature and issue 3133 is solved. Zig is a wonderful language, its design is very good IMO and will be ideal for OSdev once bugs on packed structures are solved, and the definitive kernel of my would-be OS will be in zig. The specification of the page transfer protocol is being written and inter-process communication relative to OS tasks like memory management, process management and scheduling, etc, will eventually be "protocolized" in order to make drop-in replacements possible.
+
 # Design Goals
 
 * 64bits only
-* nanokernel : Kernel contains only the scheduler and the interrupt receiver (no handling)
+* nanokernel : Kernel contains only the context switching and the interrupt receiver (no handling)
 * kernel-services : separate processes in ring 0 : low-level drivers 
 * application-services : processes in ring 3 : page allocator, page transferer, process manager, high-level drivers, etc ...
 
 ## Syscall
-Unique, general purpose syscall "Send". int 0x81, rax : pid of receiver, rbx : 1st page adress, rcx : number of pages. Returns a success code : 0 success, 1 transferer full
-Sends the pages to the receiver process.
-
-Each process has a special page setup for the system to tell wich pages were added. It works as a queue. To acknowledge the transfer, put the entry to 0 (better use SSE to make it atomic). In case no free entry could be found to signal an added page : transfer back to the requesting process
-
-
-### How it works
-The interrupt receiver receives the "Send" data, adds a page containing the requested transfer to the page transferer, raises a flag in the scheduler to execute the transferer next and put the page thus transfered's adress in the transfer queue.
+Page Transfer Protocol, no syscalls necessary in theory (in practice, it's not implemented so this goal may be impossible to reach).
